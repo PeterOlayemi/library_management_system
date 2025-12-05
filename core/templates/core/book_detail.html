@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+
+{% block content %}
+
+{% if book.cover %}
+    <img src="{{ book.cover.url }}" alt="{{ book.title }}" style="max-width:200px;">
+{% endif %}
+
+<h2>{{ book.title }}</h2>
+<p>{{ book.rating|star_rating }}</p>
+
+<p><strong>Author:</strong> {{ book.author }}</p>
+
+<p>
+    <strong>Category:</strong>
+    {% for cat in book.category.all %}
+        {{ cat.name }}{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+</p>
+
+<p>{{ book.description }}</p>
+
+<p><strong>Available:</strong> {{ book.available_copies }}</p>
+
+{% if book.available_copies > 0 %}
+    <a href="{% url 'borrow_book' book.pk %}">Borrow Book</a>
+{% else %}
+    <p><em>Not available</em></p>
+{% endif %}
+
+{% if not user.is_staff %}
+    <form method="post" action="{% url 'toggle_bookmark' book.id %}">
+        {% csrf_token %}
+        {% if is_bookmarked %}
+            <button type="submit">Remove Bookmark</button>
+        {% else %}
+            <button type="submit">Add to Bookmarks</button>
+        {% endif %}
+    </form>
+{% endif %}
+
+<hr>
+
+{% if not user.is_staff %}
+    <a href="{% url 'add_review' book.id %}">Add Review</a>
+{% endif %}
+
+<hr>
+
+<h3>Reviews</h3>
+
+{% if book.reviews.all %}
+    <ul>
+        {% for review in book.reviews.all %}
+            <li>
+                <p><strong>{{ review.user.username }}</strong></p>
+                <p>{{ review.rating|star_rating }}</p>
+                <p>{{ review.review }}</p>
+                <p><em>{{ review.created_at|date:"M j, Y" }}</em></p>
+
+                <!-- If the logged-in user wrote this review -->
+                {% if review.user == request.user %}
+                    <a href="{% url 'update_review' review.id %}">Edit</a> |
+                    <a href="{% url 'delete_review' review.id %}">Delete</a>
+                {% endif %}
+            </li>
+            <hr>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No reviews yet.</p>
+{% endif %}
+
+{% endblock %}

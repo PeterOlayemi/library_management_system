@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+
+{% block content %}
+
+<h2>My Bookmarked Books</h2>
+
+<ul>
+    {% for bm in bookmarks %}
+        <li>
+            {% if bm.book.cover %}
+                <img src="{{ bm.book.cover.url }}" alt="{{ bm.book.title }}" style="max-width:200px;">
+            {% endif %}
+            <a href="{% url 'book_detail' bm.book.id %}">{{ bm.book.title }}</a>
+            — {{ bm.book.author }}
+            ({{ bm.book.available_copies }} copies left)
+            {{ bm.book.rating|star_rating }}
+        </li>
+    {% empty %}
+        <p>You haven't bookmarked any books yet.</p>
+    {% endfor %}
+</ul>
+
+{% endblock %}

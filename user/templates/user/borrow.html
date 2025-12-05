@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load custom_tags %}
+
+{% block content %}
+
+<h2>Borrow Book</h2>
+
+<h3>{{ book.title }}</h3>
+<p>{{ book.rating|star_rating }}</p>
+<p><strong>Author:</strong> {{ book.author }}</p>
+
+{% if book.cover %}
+    <img src="{{ book.cover.url }}" alt="{{ book.title }}" style="max-width:200px;">
+{% endif %}
+
+<p><strong>Available Copies:</strong> {{ book.available_copies }}</p>
+
+{% if book.available_copies > 0 %}
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Borrow Book</button>
+    </form>
+{% else %}
+    <p><em>Sorry, this book is currently unavailable.</em></p>
+{% endif %}
+
+<a href="{% url 'book_detail' book.pk %}">Back to Book Details</a>
+
+{% endblock %}

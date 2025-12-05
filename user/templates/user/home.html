@@ -1,5 +1,58 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<h2>Welcome User</h2>
+
+<h3>My Borrowed Books</h3>
+
+<ul>
+    {% for record in borrowed %}
+    <li>
+        <a href="{% url 'book_detail' record.book.id %}">{{ record.book.title }}</a> — Due {{ record.due_date|date:"M j, Y" }}
+        <a href="{% url 'return_book' record.id %}">Return</a>
+    </li>
+    {% empty %}
+    <p>You have not borrowed any books.</p>
+    {% endfor %}
+</ul>
+
+<!-- Borrowed Pagination -->
+<div>
+    {% if borrowed.has_previous %}
+        <a href="?borrowed_page={{ borrowed.previous_page_number }}">Previous</a>
+    {% endif %}
+
+    Page {{ borrowed.number }} of {{ borrowed.paginator.num_pages }}
+
+    {% if borrowed.has_next %}
+        <a href="?borrowed_page={{ borrowed.next_page_number }}">Next</a>
+    {% endif %}
+</div>
+
+<hr>
+
+<h3>Borrow History</h3>
+
+<ul>
+    {% for record in history %}
+    <li>
+        <a href="{% url 'book_detail' record.book.id %}">{{ record.book.title }}</a> —
+        {% if record.returned %}Returned{% else %}Not Returned{% endif %}
+    </li>
+    {% empty %}
+    <p>No history available.</p>
+    {% endfor %}
+</ul>
+
+<!-- History Pagination -->
+<div>
+    {% if history.has_previous %}
+        <a href="?history_page={{ history.previous_page_number }}">Previous</a>
+    {% endif %}
+
+    Page {{ history.number }} of {{ history.paginator.num_pages }}
+
+    {% if history.has_next %}
+        <a href="?history_page={{ history.next_page_number }}">Next</a>
+    {% endif %}
+</div>
+
 {% endblock %}

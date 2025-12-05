@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+
+{% block content %}
+
+<h3>Available Books</h3>
+
+<form method="get">
+    <input type="text" name="q" placeholder="Search books..."
+           value="{{ request.GET.q }}">
+    <button type="submit">Search</button>
+</form>
+
+<hr>
+
+<ul>
+    {% for book in books %}
+    <li>
+        {% if book.cover %}
+            <img src="{{ book.cover.url }}" alt="{{ book.title }}" style="max-width:200px;">
+        {% endif %}
+        <a href="{% url 'book_detail' book.pk %}">{{ book.title }}</a>
+        — {{ book.author }}
+        ({{ book.available_copies }} copies left)
+        {{ book.rating|star_rating }}
+    </li>
+    {% empty %}
+    <p>No books found.</p>
+    {% endfor %}
+</ul>
+
+<!-- PAGINATION -->
+<div class="pagination" style="margin-top: 20px;">
+    <span>
+        {% if page_obj.has_previous %}
+            <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">First</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Previous</a>
+        {% endif %}
+    </span>
+
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+    <span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Last</a>
+        {% endif %}
+    </span>
+</div>
+
+{% endblock %}

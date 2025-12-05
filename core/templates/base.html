@@ -5,7 +5,9 @@
     <a href="{% url 'staff_home' %}">Home</a> / 
 {% else %}
     <a href="{% url 'user_home' %}">Home</a> / 
+    <a href="{% url 'bookmarks' %}">My Bookmark</a> / 
 {% endif %}
+<a href="{% url 'book_list' %}">Books</a> / 
 <form action="{% url 'logout' %}" method="POST">
     {% csrf_token %}
     <input type="submit" value="Log out">
